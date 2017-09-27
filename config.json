@@ -11,10 +11,9 @@
   "data": {
     "posts": [
       {"title" : "Foo", "desc" : "Description", "link" : "foo"},
-      {"title" : "Foo1", "desc" : "Description", "link" : "foo1"},
-      {"title" : "Foo", "desc" : "Description", "link" : "foo"},
       {"title" : "Foo", "desc" : "Description", "link" : "foo"},
       {"title" : "Foo", "desc" : "Description", "link" : "foo"}
+
     ],
     "navItems": [
       {"title" : "Current Projects", "link" : "current-projects"},
