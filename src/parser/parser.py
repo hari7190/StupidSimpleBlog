@@ -1,5 +1,5 @@
 import json, os, errno, shutil, sys
-
+from time import gmtime, strftime
 ##############################
 #   Arguments
 ##############################
@@ -10,6 +10,13 @@ import json, os, errno, shutil, sys
 ##############################
 #   Get Configuration
 ##############################
+def printMessage(message, type):
+    print("----------------" + strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()) + "------------------------")
+    print(message)
+    #print("-----------------------------------------------------------")
+
+
+printMessage("Parser initiating","info")
 
 with open('../../config.json') as data_file:
     data = json.load(data_file)
@@ -19,6 +26,8 @@ root = data["format"]["root"]
 posts = data["data"]["posts"]
 navItems = data["data"]["navItems"]
 
+printMessage("Configuration loaded","info")
+
 ##############################
 #   Clear output
 ##############################
@@ -27,6 +36,9 @@ try:
     shutil.rmtree("../../" + directory)
 except OSError as e:
     print('No directory to delete')
+
+
+printMessage("Cleaning target","info")
 
 ##############################
 #   Create directory
@@ -39,6 +51,8 @@ except OSError as e:
     if e.errno != errno.EEXIST:
         raise
 
+printMessage("Target prepped","info")
+
 ##############################
 #   Get commons and append
 ##############################
@@ -47,7 +61,9 @@ with open("../../" + data["format"]["header"], "r") as f: header = f.read()
 with open("../../" + data["format"]["footer"], "r") as f: footer = f.read()
 
 file_list = [x for x in os.listdir("../../web/posts") if x.endswith(".html") and not x.endswith("-draft.html")]
-print(file_list)
+
+
+printMessage(file_list,"info")
 
 ##############################
 #   Prepare Header
@@ -65,6 +81,7 @@ for nav in navItems:
 
 header = header.replace("{navs}", final_content)
 
+printMessage("Header prepped","info")
 ##############################
 #   Prepare Posts
 ##############################
@@ -89,12 +106,15 @@ def copyanything(src, dst):
             shutil.copy(src, dst)
         else: raise
 
+printMessage("Posts parsed and compiled","info")
+
 ##############################
 #   Copy resources
 ##############################
 
 copyanything("../../web/resources", directory + "/resources")
 
+printMessage("Resources copied","info")
 
 ##############################
 #   Prepare post list
@@ -119,3 +139,8 @@ for post in posts:
 
 with open(directory + "/" + root,'w') as ofh:
     ofh.write(header + final_content + footer)
+
+printMessage("Root prepped and compiled","info")
+
+
+printMessage("Completed","info")
