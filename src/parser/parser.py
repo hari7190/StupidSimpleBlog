@@ -91,11 +91,11 @@ for file in file_list:
     with open("../../web/posts/" + file, "r") as f: post_content = f.read()
     final_content = header + post_content + footer
 
-    if(file != 'root.html'):
-        with open(directory + '/post-' + file ,'w') as ofh:
+    if(file.endswith("-norename.html")):
+        with open(directory + '/' + file.replace("-norename.html", ".html") ,'w') as ofh:
             ofh.write(final_content)
     else:
-        with open(directory + "/" + root,'w') as ofh:
+        with open(directory + '/post-' + file ,'w') as ofh:
             ofh.write(final_content)
 
 def copyanything(src, dst):
