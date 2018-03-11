@@ -2,22 +2,23 @@
   "format": {
     "header": "web/commons/layout/header.html",
     "footer": "web/commons/layout/footer.html",
-    "root": "index.html"
+    "root"  : "index.html"
   },
   "parse": {
-    "target": "output",
-    "logs": "logs"
+    "target": "../../output",
+    "logs"  : "logs"
   },
   "data": {
     "posts": [
-      {"title" : "Foo", "desc" : "Description", "link" : "foo"},
-      {"title" : "Foo", "desc" : "Description", "link" : "foo"},
-      {"title" : "Foo", "desc" : "Description", "link" : "foo"}
-
+      {   "title" : "Algorithms"
+        , "desc"  : "Examples of algorithms"
+        , "link"  : "algorithms"
+      }
     ],
     "navItems": [
       {"title" : "Current Projects", "link" : "current-projects"},
-      {"title" : "About me", "link" : "about-me"}
+      {"title" : "About me", "link" : "about-me"},
+      {"title" : "Home", "link" : "index"}
     ]
   }
 }

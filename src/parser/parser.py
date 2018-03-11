@@ -24,7 +24,7 @@ navItems = data["data"]["navItems"]
 ##############################
 
 try:
-    shutil.rmtree("../../" + directory)
+    shutil.rmtree(directory)
 except OSError as e:
     print('No directory to delete')
 
@@ -33,7 +33,7 @@ except OSError as e:
 ##############################
 
 try:
-    directory = "../../" + directory
+    directory = directory
     os.makedirs(directory)
 except OSError as e:
     if e.errno != errno.EEXIST:
@@ -60,10 +60,17 @@ final_content = ''
 
 for nav in navItems:
     temp = navElement.replace("{title}", nav["title"])
-    temp = temp.replace("{link}", "post-" + nav["link"] + ".html")
+
+    if(nav["link"] + ".html" != root):
+        temp = temp.replace("{link}", "post-" + nav["link"] + ".html")
+    else:
+        temp = temp.replace("{link}", nav["link"] + ".html")
+
     final_content = final_content + temp
 
 header = header.replace("{navs}", final_content)
+
+
 
 ##############################
 #   Prepare Posts
@@ -90,9 +97,14 @@ def copyanything(src, dst):
         else: raise
 
 ##############################
+#   Copy snippets
+##############################
+copyanything("../../web/snippets", directory + "/snippets")
+
+
+##############################
 #   Copy resources
 ##############################
-
 copyanything("../../web/resources", directory + "/resources")
 
 
