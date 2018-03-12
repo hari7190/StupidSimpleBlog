@@ -28,6 +28,11 @@ body {
     padding: 0 15px;
 }
 
+.justify{
+    text-align: justify;
+    text-justify: inter-word;
+}
+
 .padded {
     padding: 15px;
 }

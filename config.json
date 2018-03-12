@@ -11,8 +11,12 @@
   "data": {
     "posts": [
       {   "title" : "Algorithms"
-        , "desc"  : "Examples of algorithms"
+        , "desc"  : "Note book of algorithms. Multiple language implementations."
         , "link"  : "algorithms"
+      },
+      {   "title" : "Voice Controlled TV"
+        , "desc"  : "A simple example for how to control your Roku TV with code."
+        , "link"  : "roku-tv-voiceControlled"
       }
     ],
     "navItems": [
