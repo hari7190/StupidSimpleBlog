@@ -17,6 +17,12 @@
       {   "title" : "Voice Controlled TV"
         , "desc"  : "A simple example for how to control your Roku TV with code."
         , "link"  : "roku-tv-voiceControlled"
+      },
+      {
+        "title" : "Deployment of ColdFusion"
+        ,"desc" : "Deploying a ColdFusion application in a J2EE container."
+        ,"link" : "cf-deploy"
+        ,"ready" : false
       }
     ],
     "navItems": [

@@ -101,11 +101,19 @@ def copyanything(src, dst):
 ##############################
 copyanything("../../web/snippets", directory + "/snippets")
 
+file_list = [x for x in os.listdir(directory + "/snippets") if not x.endswith(".html")]
+
+print(file_list)
+
+for file in file_list:
+    os.rename(directory + '/snippets/' + file, directory + '/snippets/' + file.replace(".py", ".html"))
+
 
 ##############################
 #   Copy resources
 ##############################
 copyanything("../../web/resources", directory + "/resources")
+
 
 
 ##############################
@@ -116,18 +124,26 @@ card_template = '<div class="card">' \
                 '<div class="card-body">' \
                 '<h4 class="card-title">{title}</h4>' \
                 '<p class="card-text">{desc}</p>' \
-                '<a href="{link}" class="btn btn-info"">Read more</a>' \
+                '{read_more}' \
                 '</div>' \
                 '</div>' \
                 '<div class="clearfix">&nbsp;</div>'
 
+read_more = '<a href="{link}" class="btn btn-info"">Read more</a>'
+
+coming_soon = "<p class=\"text-info\">Coming Soon</p>"
+
 final_content = ''
 
 for post in posts:
-    temp = card_template.replace("{title}", post["title"])
+    if ('ready' in post and not post['ready']):
+        temp = card_template.replace("{read_more}", coming_soon)
+    else:
+        temp = card_template.replace("{read_more}", read_more)
+    temp = temp.replace("{title}", post["title"])
     temp = temp.replace("{desc}", post["desc"])
     temp = temp.replace("{link}", "post-" + post["link"] + ".html")
-    final_content = final_content + temp
+    final_content = final_content + '\n' + temp
 
 with open(directory + "/" + root,'w') as ofh:
     ofh.write(header + final_content + footer)
