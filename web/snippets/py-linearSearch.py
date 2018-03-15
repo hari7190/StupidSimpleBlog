@@ -1,4 +1,3 @@
-
 # Linear Search - Python
 
 input_arr = [1, 2, 3, 4, 5, 643, 13, 22, 45]
