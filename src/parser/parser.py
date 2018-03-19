@@ -1,4 +1,4 @@
-import json, os, errno, shutil, sys
+import json, os, errno, shutil
 
 ##############################
 #   Arguments
