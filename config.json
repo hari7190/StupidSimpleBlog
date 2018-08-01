@@ -23,6 +23,12 @@
         ,"desc" : "Deploying a ColdFusion application in a J2EE container."
         ,"link" : "cf-deploy"
         ,"ready" : false
+      },
+      {
+        "title" : "My struggle for a queue"
+        ,"desc" : "Figuring out the best message broker for my usecase"
+        ,"link" : "message-broker"
+        ,"ready" : false
       }
     ],
     "navItems": [
