@@ -135,7 +135,7 @@ coming_soon = "<p class=\"text-info\">Coming Soon</p>"
 
 final_content = ''
 
-for post in posts:
+for post in reversed(posts):
     if ('ready' in post and not post['ready']):
         temp = card_template.replace("{read_more}", coming_soon)
     else:

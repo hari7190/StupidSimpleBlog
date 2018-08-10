@@ -1,15 +1,22 @@
-# author: Hari MS
-#
-#
+# Author : Hari
 
-import json, urllib.request
-
-with open('../../config.json') as data_file:
-    data = json.load(data_file)
-
-jobURL = data["deploy"]["jobURL"]
+import subprocess
+import json, os, errno, shutil
 
 
+# Get Details
+with open('../../config.json') as config_file:
+    data = json.load(config_file)
 
-#Deploy
-urllib.request.urlopen(jobURL).read()
+outputDirectory = data["parse"]["target"]
+
+with open('../../secrets.json') as secret_file:
+    data = json.load(secret_file)
+
+destDirectory = data["remotes"][0]["path"]
+remoteUser = data["remotes"][0]["user"]
+remoteHost = data["remotes"][0]["remotehost"]
+
+p = subprocess.Popen(["scp", "-pr", outputDirectory + "/.", remoteUser + "@" + remoteHost + ":" + destDirectory + "/"])
+
+sts = os.waitpid(p.pid, 0)

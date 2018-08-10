@@ -29,12 +29,37 @@
         ,"desc" : "Figuring out the best message broker for my usecase"
         ,"link" : "message-broker"
         ,"ready" : false
+      },
+      {
+        "title" : "Developing a skill for Alexa"
+        ,"desc" : "A quick tutorial for an Alexa skill"
+        ,"link" : "alexa-skill"
+        ,"ready" : false
+      },
+      {
+        "title" : "Proxmox or ESXi"
+        ,"desc" : "Selecting a baremetal virtualization solution for my home lab. TL;DR I now have both !"
+        ,"link" : "proxmox-esxi"
+        ,"ready" : false
+      },
+      {
+        "title" : "Setting up a media server"
+        ,"desc" : "Steps for bringing up a Ubuntu - Transmission - Plex machine"
+        ,"link" : "ubuntu-transmission-plex"
+        ,"ready" : false
+      },
+      {
+        "title" : "Face recognition - A quick tutorial"
+        ,"desc" : "Simplest possible face recognition / detection setup."
+        ,"link" : "face-recognition"
+        ,"ready" : false
       }
     ],
     "navItems": [
       {"title" : "Current Projects", "link" : "current-projects"},
       {"title" : "About me", "link" : "about-me"},
-      {"title" : "Home", "link" : "index"}
+      {"title" : "Home", "link" : "index"},
+      {"title" : "Interesting articles", "link" : "interesting-reads"}
     ]
   }
 }
