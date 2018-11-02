@@ -22,7 +22,7 @@
         "title" : "Deployment of ColdFusion"
         ,"desc" : "Deploying a ColdFusion application in a J2EE container."
         ,"link" : "cf-deploy"
-        ,"ready" : false
+        ,"ready" : true
       },
       {
         "title" : "My struggle for a queue"
@@ -52,6 +52,12 @@
         "title" : "Face recognition - A quick tutorial"
         ,"desc" : "Simplest possible face recognition / detection setup."
         ,"link" : "face-recognition"
+        ,"ready" : false
+      },
+      {
+        "title" : "XSS & CSRF vulnerabilities"
+        ,"desc" : "A quick run down on my day after pen test results came out"
+        ,"link" : "xss-csrf-vulnerabilities"
         ,"ready" : false
       }
     ],

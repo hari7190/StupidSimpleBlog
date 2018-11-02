@@ -50,4 +50,6 @@ body {
 /*height: 100px;*/
 /*display: block;*/
 /*}*/
-
+li {
+    margin:10px
+}
