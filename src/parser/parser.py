@@ -53,7 +53,7 @@ print(file_list)
 #   Prepare Header
 ##############################
 navElement = '<li class="nav-item">' \
-'<a class="nav-link" href="{link}">{title}</a>' \
+'<a class="nav-link" href="{link}">{title}</a>' \   
 '</li>'
 
 final_content = ''

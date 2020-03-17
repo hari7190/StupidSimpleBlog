@@ -1,1 +1,2 @@
-*.py linguist-language=python
+output\resources\css*.css linguist-vendored
+web\resources\css*.css linguist-vendored
