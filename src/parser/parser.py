@@ -52,9 +52,7 @@ print(file_list)
 ##############################
 #   Prepare Header
 ##############################
-navElement = '<li class="nav-item">' \
-'<a class="nav-link" href="{link}">{title}</a>' \   
-'</li>'
+navElement = '<li class="nav-item"><a class="nav-link" href="{link}">{title}</a></li>'
 
 final_content = ''
 
@@ -88,13 +86,22 @@ for file in file_list:
         with open(directory + "/" + root,'w') as ofh:
             ofh.write(final_content)
 
+
 def copyanything(src, dst):
     try:
         shutil.copytree(src, dst)
     except OSError as exc: # python >2.5
         if exc.errno == errno.ENOTDIR:
             shutil.copy(src, dst)
-        else: raise
+        else:
+            raise
+
+
+##############################
+#   Copy Pages - Independent pages
+##############################
+copyanything("../../web/pages", directory + "/pages")
+
 
 ##############################
 #   Copy snippets
