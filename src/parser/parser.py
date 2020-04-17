@@ -76,7 +76,7 @@ header = header.replace("{navs}", final_content)
 final_content = ''
 
 for file in file_list:
-    with open("../../web/posts/" + file, "r") as f: post_content = f.read()
+    with open("../../web/posts/" + file, "r", errors='ignore') as f: post_content = f.read()
     final_content = header + post_content + footer
 
     if(file != 'root.html'):

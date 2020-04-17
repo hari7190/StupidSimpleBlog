@@ -59,6 +59,12 @@
         ,"desc" : "A quick run down on my day after pen test results came out"
         ,"link" : "xss-csrf-vulnerabilities"
         ,"ready" : false
+      },
+      {
+        "title" : "Network Connectivity through Wireless interface for Debian"
+        ,"desc" : "Building and installing Realtek drivers, configuring IP Tables"
+        ,"link" : "wifi-adapter-debian"
+        ,"ready" : false
       }
     ],
     "navItems": [
