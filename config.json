@@ -64,7 +64,7 @@
         "title" : "Network Connectivity through Wireless interface for Debian"
         ,"desc" : "Building and installing Realtek drivers, configuring IP Tables"
         ,"link" : "wifi-adapter-debian"
-        ,"ready" : false
+        ,"ready" : true
       }
     ],
     "navItems": [

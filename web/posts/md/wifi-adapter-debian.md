@@ -7,7 +7,11 @@ weblogName: arrays.stream
 postDate: 2020-04-17T00:22:23.6197990-04:00
 ---
 
-# Network Connectivity through Wireless interface for Debian
+# Network Connectivity through Wireless interface for Debian  
+  
+
+![xkcd](https://imgs.xkcd.com/comics/tar.png)  
+Permanent link to this comic: https://xkcd.com/1168/
 
 ##### Problem
 I have a couple of Proxmox servers which I use to host Kubernetes nodes. I keep them at the basement because I do not want to deal with the noise. But there are no wired connections available. 
@@ -61,7 +65,21 @@ cd rtl8812au
 sudo ./dkms-install.sh
 sudo modprobe 88XXau
 ```
-There might be a few issues you might face if you are trying to do in Proxmox.
+
+###### RTL88XXBU - 1200 mbps 
+```bash
+sudo apt install git dkms
+git clone https://github.com/cilynx/rtl88x2bu.git
+cd rtl88x2bu
+VER=$(sed -n 's/\PACKAGE_VERSION="\(.*\)"/\1/p' dkms.conf)
+sudo rsync -rvhP ./ /usr/src/rtl88x2bu-${VER}
+sudo dkms add -m rtl88x2bu -v ${VER}
+sudo dkms build -m rtl88x2bu -v ${VER}
+sudo dkms install -m rtl88x2bu -v ${VER}
+sudo modprobe 88x2bu
+```
+
+There might be a few issues you might face if you are trying to do these in Proxmox.
 
 ##### First one:
 ```bash
@@ -150,7 +168,7 @@ Success :thumbsup: we now have the driver installed.
 Now you should have an interface showing up with a name starting at wl.
 
 ```bash
-#From an Ubuntu 18.04 Server - ifconfig
+#From an Ubuntu 18.04 Server - ifconfig - Obfuscated for kicks
 wlxe**e066c81b0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 2312
         inet6 fd**:f81d:fad:5**2:ea4e:6ff:f**c:81b0  prefixlen 64  scopeid 0x0<global>
         inet6 fe**::ea4e:6**:fe6c:8**0  prefixlen 64  scopeid 0x20<link>
@@ -161,27 +179,117 @@ wlxe**e066c81b0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 2312
         TX errors 0  dropped 2 overruns 0  carrier 0  collisions 0
 ```
 
+---
 
+If you my goal was to get a typical Ubuntu box, I would be done by now. But, we need a Linux Bridge for Proxmox machine which can enslave the new wifi module. And then we connect that bridge to all the VM NICs
 
+---
 
+Well, I realized that it cannot be done or I don't understand it enough to do that. That is when I came across this post from super helpful folks at Proxmox - [link][3]. The issue mentioned here is not exactly what my problem is  but it gave me a framework to work with.
 
+> As per, Stoiko Ivanov, Proxmox Staff Member:  
+>
+> AFAIR wifi-interfaces usually do not support being part of a bridge in station (client) mode (i.e. you can only add them in access-point mode).
+> 
+> What should work is using a NAT/routed config - see https://pve.proxmox.com/pve-docs/ch..._nat_with_span_class_monospaced_iptables_span
+> 
+> just take the wlo1 as interface holding the default route, add a vmbr0 without any physical ports, configure ip-forwarding and optionally add NAT rules.
+> 
+> hope this helps!
 
+#### Alright the new plan!
 
+We are not going to enslave the WiFi adapter and instead we will create a Linux Bridge without any physical ports and setup up default gateway only on the WiFi interface.
 
+> HA! That worked. 
 
+So the final configuration looks like this.
 
+```bash
+root@pve:~# cat /etc/network/interfaces
+auto lo
+iface lo inet loopback
 
+#iface ens18 inet manual - DISABLED ETHERNET PORT
 
+auto wlx1****2ee2b #Wireless device
+iface wlx1****2ee2b inet static
+        address 192.168.0.29
+        netmask 255.255.255.0
+        gateway 192.168.0.1
+        wpa-ssid SSID_NAME
+        wpa-psk 761185c*******aea444****5900db9
 
+auto vmbr0  #Bridge with no ports for the Linux bridge
+iface vmbr0 inet static
+        address  10.10.10.1
+        netmask  255.255.255.0
+        bridge_ports none
+        bridge_stp off
+        bridge_fd 0
+        #Masquerading rules below
+        post-up   echo 1 > /proc/sys/net/ipv4/ip_forward
+        post-up   iptables -t nat -A POSTROUTING -s '10.10.10.0/24' -o wlx1****2ee2b -j MASQUERADE
+        post-down iptables -t nat -D POSTROUTING -s '10.10.10.0/24' -o wlx1****2ee2b -j MASQUERADE
+        # Exposing port 22 of a VM connected to Linux Bridge.
+        post-up iptables -t nat -A PREROUTING -i vmbr0 -p tcp --dport 2222 -j DNAT --to 10.10.10.25:22
+        post-down iptables -t nat -D PREROUTING -i vmbr0 -p tcp --dport 2222 -j DNAT --to 10.10.10.25:22
+```
 
+I am now able to reach to internet and other local network from Proxmox (Debian) shell. 
 
+Data transfer rates with WiFi adapters (rated at 600 Mbps to 1200 Mbps but only giving 45 mbps) were disappointing at best, but it works for my use case. 
+
+I ran some tests using iPerf3 - Look here for instructions.
+
+```bash
+#Test was between another machine in the same network - Interface is WIFI
+#Both test machines are using same wifi adapters. No wired connection.
+user@kubernetes:~/iperf$ iperf3 -c 192.168.0.18
+Connecting to host 192.168.0.18, port 5201
+[  4] local 192.168.0.24 port 34256 connected to 192.168.0.18 port 5201
+[ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+[  4]   0.00-1.00   sec  6.45 MBytes  54.1 Mbits/sec    0    215 KBytes
+[  4]   1.00-2.00   sec  5.94 MBytes  49.9 Mbits/sec    0    215 KBytes
+[  4]   2.00-3.00   sec  5.51 MBytes  46.3 Mbits/sec    0    215 KBytes
+[  4]   3.00-4.00   sec  5.39 MBytes  45.2 Mbits/sec    0    215 KBytes
+[  4]   4.00-5.00   sec  4.96 MBytes  41.6 Mbits/sec    0    215 KBytes
+[  4]   5.00-6.00   sec  3.80 MBytes  31.9 Mbits/sec    0    215 KBytes
+[  4]   6.00-7.00   sec  1.96 MBytes  16.4 Mbits/sec    0    215 KBytes
+[  4]   7.00-8.00   sec  6.62 MBytes  55.5 Mbits/sec    0    215 KBytes
+[  4]   8.00-9.00   sec  6.31 MBytes  52.9 Mbits/sec    0    215 KBytes
+[  4]   9.00-10.00  sec  5.94 MBytes  49.8 Mbits/sec    0    215 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-10.00  sec  52.9 MBytes  44.4 Mbits/sec    0             sender
+[  4]   0.00-10.00  sec  51.9 MBytes  43.5 Mbits/sec                  receiver
+```
+
+### Next Steps:
+Now I have Proxmox servers with WiFi connectivity, but I still  have to figure out the internal network for the VMs. 
+There are still many many concerns to be addressed:
+* How the routing happens
+* speed
+* DHCP assignments
+* How do I get into that box - VPN or bridge
+* iDrac have an Ethernet port and I need to find a way to get that online too.
+
+Possible directions:
+* I got my Archer C7 upgraded to the latest firmware and it seems to be working fine now. So now I'm back to using wired connections for most of the things and WIFI is like a back up if Archer C7 starts dropping connections.
+* Get Linux ready WiFi adapters and see how the speeds improve.
+* Learn more about Linux networking and Proxmox to figure out the vlan setup with the bridge and might use Vyos as a virtualized internal network router.
 
 
 
 ##### References
+I have used so many resources while I was trying to figure it out. Some of them are linked below.
 
 [AskUbuntu - rtl8814au-driver-for-kernel-5-3-on-ubuntu-19-10][1]  
-[Proxmox - Package repositories][2]
+[Proxmox - Package repositories][2]  
+[Proxmox - using wifi instead of ethernet][3]  
+[Masquerading (NAT) with iptables][4]
 
   [1]: https://askubuntu.com/questions/1185952/need-rtl8814au-driver-for-kernel-5-3-on-ubuntu-19-10#comment2004621_1185986
   [2]: https://pve.proxmox.com/wiki/Package_Repositories
+  [3]: https://forum.proxmox.com/threads/using-wifi-instead-of-ethernet.56691/
+  [4]: https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#_masquerading_nat_with_span_class_monospaced_iptables_span
