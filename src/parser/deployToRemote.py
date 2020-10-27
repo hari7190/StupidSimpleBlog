@@ -20,6 +20,6 @@ destDirectory = data["remotes"][0]["path"]
 remoteUser = data["remotes"][0]["user"]
 remoteHost = data["remotes"][0]["remotehost"]
 
-p = subprocess.Popen(["scp", "-pr", outputDirectory + "/.", remoteUser + "@" + remoteHost + ":" + destDirectory + "/"])
+p = subprocess.Popen(["scp", "-pr", outputDirectory + "/*", remoteUser + "@" + remoteHost + ":" + destDirectory + "/"])
 
 sts = os.waitpid(p.pid, 0)
