@@ -10,21 +10,23 @@ import json, os, errno, shutil
 ##############################
 #   Get Configuration
 ##############################
+dirname = os.path.dirname(__file__)
+config_file = os.path.join(dirname, '../../config.json')
 
-with open('../../config.json') as data_file:
+with open(config_file) as data_file:
     data = json.load(data_file)
 
-directory = data["parse"]["target"]
+outputDirectory = data["parse"]["target"]
 root = data["format"]["root"]
 posts = data["data"]["posts"]
 navItems = data["data"]["navItems"]
-
+web_folder = data["parse"]["source"]
 ##############################
 #   Clear output
 ##############################
 
 try:
-    shutil.rmtree(directory)
+    shutil.rmtree(outputDirectory)
 except OSError as e:
     print('No directory to delete')
 
@@ -33,8 +35,7 @@ except OSError as e:
 ##############################
 
 try:
-    directory = directory
-    os.makedirs(directory)
+    os.makedirs(outputDirectory)
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
@@ -43,11 +44,10 @@ except OSError as e:
 #   Get commons and append
 ##############################
 
-with open("../../" + data["format"]["header"], "r") as f: header = f.read()
-with open("../../" + data["format"]["footer"], "r") as f: footer = f.read()
+with open(web_folder + data["format"]["header"], "r") as f: header = f.read()
+with open(web_folder + data["format"]["footer"], "r") as f: footer = f.read()
 
-file_list = [x for x in os.listdir("../../web/posts") if x.endswith(".html") and not x.endswith("-draft.html")]
-print(file_list)
+file_list = [x for x in os.listdir(web_folder + "/posts") if x.endswith(".html") and not x.endswith("-draft.html")]
 
 ##############################
 #   Prepare Header
@@ -76,14 +76,14 @@ header = header.replace("{navs}", final_content)
 final_content = ''
 
 for file in file_list:
-    with open("../../web/posts/" + file, "r", errors='ignore') as f: post_content = f.read()
+    with open(web_folder + "/posts/" + file, "r", errors='ignore') as f: post_content = f.read()
     final_content = header + post_content + footer
 
     if(file != 'root.html'):
-        with open(directory + '/post-' + file ,'w') as ofh:
+        with open(outputDirectory + '/post-' + file ,'w') as ofh:
             ofh.write(final_content)
     else:
-        with open(directory + "/" + root,'w') as ofh:
+        with open(outputDirectory + "/" + root,'w') as ofh:
             ofh.write(final_content)
 
 
@@ -100,26 +100,26 @@ def copyanything(src, dst):
 ##############################
 #   Copy Pages - Independent pages
 ##############################
-copyanything("../../web/pages", directory + "/pages")
+copyanything( web_folder + "/pages/", outputDirectory + "/pages")
 
 
 ##############################
 #   Copy snippets
 ##############################
-copyanything("../../web/snippets", directory + "/snippets")
+copyanything(web_folder+ "/snippets", outputDirectory + "/snippets")
 
-file_list = [x for x in os.listdir(directory + "/snippets") if not x.endswith(".html")]
+file_list = [x for x in os.listdir(outputDirectory + "/snippets") if not x.endswith(".html")]
 
 print(file_list)
 
 for file in file_list:
-    os.rename(directory + '/snippets/' + file, directory + '/snippets/' + file.replace(".py", ".html"))
+    os.rename(outputDirectory + '/snippets/' + file, outputDirectory + '/snippets/' + file.replace(".py", ".html"))
 
 
 ##############################
 #   Copy resources
 ##############################
-copyanything("../../web/resources", directory + "/resources")
+copyanything(web_folder + "/resources", outputDirectory + "/resources")
 
 
 
@@ -152,5 +152,17 @@ for post in reversed(posts):
     temp = temp.replace("{link}", "post-" + post["link"] + ".html")
     final_content = final_content + '\n' + temp
 
-with open(directory + "/" + root,'w') as ofh:
+with open(outputDirectory + "/" + root,'w') as ofh:
     ofh.write(header + final_content + footer)
+
+######################################################
+       # Summary Output
+#####################################################
+
+print("-----------------------------------------------------------------------------------")
+print("Compilation Complete. As always it was stupid simple.")
+print("-----------------------------------------------------------------------------------")
+print("Summary:")
+print("Number of posts processed: " + str(len(file_list)))
+print("-----------------------------------------------------------------------------------")
+print("-----------------------------------------------------------------------------------")

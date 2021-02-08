@@ -1,11 +1,12 @@
 {
   "format": {
-    "header": "web/commons/layout/header.html",
-    "footer": "web/commons/layout/footer.html",
+    "header": "/commons/layout/header.html",
+    "footer": "/commons/layout/footer.html",
     "root"  : "index.html"
   },
   "parse": {
-    "target": "../../output",
+    "source": "F://Code/Labs/arrays.stream/src",
+    "target": "F://Code/Labs/arrays.stream/public",
     "logs"  : "logs"
   },
   "data": {
